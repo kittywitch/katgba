@@ -64,11 +64,7 @@
         katgba = pkgs.callPackage ./package.nix { inherit craneLib rustToolchain rustTriple; };
       in {
         devShells = let
-          katgba-emu = pkgs.mkShell {
-            nativeBuildInputs = [
-              self.packages.${pkgs.system}.katgba-emu
-            ];
-          };
+          katgba-emu = import ./shell.nix { inherit self pkgs; };
         in {
           default = katgba-emu;
           inherit katgba-emu;
