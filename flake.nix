@@ -69,7 +69,7 @@
         };
         apps = rec {
           katgba-emu = flake-utils.lib.mkApp { drv = pkgs.writeShellScriptBin "katgba-emu" ''
-            ${pkgs.mgba}/bin/mgba-qt ${lib.getExe self.packages.${system}.default}
+            ${pkgs.mgba}/bin/mgba-qt ${lib.getExe' self.packages.${system}.default "katgba"}
           ''; };
           default = katgba-emu;
         };
