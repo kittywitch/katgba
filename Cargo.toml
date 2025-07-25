@@ -1,0 +1,13 @@
+[package]
+name = "katgba"
+description = "kat video game"
+version = "0.1.0"
+edition = "2024"
+include = ["src/foo.txt", "/build/linker_scripts"]
+build = "build.rs"
+
+[dependencies]
+gba = "0.14.1"
+
+[build-dependencies]
+gbafix = "1.0.4"
