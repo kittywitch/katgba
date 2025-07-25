@@ -16,6 +16,7 @@
 
   outputs =
     {
+    self,
     nixpkgs,
     flake-utils,
     rust-overlay,
@@ -62,7 +63,15 @@
 
           myPackage = pkgs.callPackage ./package.nix { inherit craneLib rustToolchain rustTriple; };
       in {
-        inherit pkgsCross;
-        packages.default = myPackage;
+        packages = {
+          default = myPackage;
+          katgba = myPackage;
+        };
+        apps = rec {
+          katgba-emu = flake-utils.lib.mkApp { drv = pkgs.writeShellScriptBin "katgba-emu" ''
+            ${pkgs.mgba}/bin/mgba-qt ${lib.getExe self.packages.${system}.default}
+          ''; };
+          default = katgba-emu;
+        };
       });
 }
