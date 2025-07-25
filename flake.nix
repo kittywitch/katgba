@@ -57,21 +57,26 @@
               targets = [ ];
             }
           );
-        rustToolchain = rustToolchainFor pkgs;
+          rustToolchain = rustToolchainFor pkgs;
 
-           craneLib = (crane.mkLib pkgs).overrideToolchain rustToolchainFor;
-
-          myPackage = pkgs.callPackage ./package.nix { inherit craneLib rustToolchain rustTriple; };
+        craneLib = (crane.mkLib pkgs).overrideToolchain rustToolchainFor;
+        katgba-emu = pkgs.callPackage ./katgba-emu.nix { inherit katgba; };
+        katgba = pkgs.callPackage ./package.nix { inherit craneLib rustToolchain rustTriple; };
       in {
-        packages = {
-          default = myPackage;
-          katgba = myPackage;
-        };
-        apps = rec {
-          katgba-emu = flake-utils.lib.mkApp { drv = pkgs.writeShellScriptBin "katgba-emu" ''
-            ${pkgs.mgba}/bin/mgba-qt ${lib.getExe' self.packages.${system}.default "katgba"}
-          ''; };
+        devShells = let
+          katgba-emu = pkgs.mkShell {
+            nativeBuildInputs = [
+              self.packages.${pkgs.system}.katgba-emu
+            ];
+          };
+        in {
           default = katgba-emu;
+          inherit katgba-emu;
+        };
+        packages = {
+          default = katgba;
+          katgba-emu = katgba-emu;
+          inherit katgba;
         };
       });
 }

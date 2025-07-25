@@ -19,3 +19,15 @@ nix build .#katgba
 # Use mgba-qt with a built rom
 nix run .#katgba-emu
 ```
+
+## Shell
+
+```
+# Allow permissions for direnv to use shell
+direnv allow
+# or consume with `nix develop`
+nix develop
+
+# Use mgba-qt with a built rom
+katgba-emu
+```
