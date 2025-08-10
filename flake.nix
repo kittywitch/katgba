@@ -30,10 +30,15 @@
     in flake-utils.lib.eachDefaultSystem (system: let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ (import rust-overlay) ];
+          overlays = [
+            (import rust-overlay)
+          ];
         };
         pkgsCross = import nixpkgs {
           inherit system;
+          overlays = [
+            (import rust-overlay)
+          ];
           config = {
             allowUnsupportedSystem = true;
             #replaceStdenv = ({ pkgs }: pkgs.clangStdenvNoLibs );
@@ -47,24 +52,25 @@
             };
           };
         };
-
         rustToolchainFor =
           p:
           p.rust-bin.selectLatestNightlyWith (
             toolchain:
             toolchain.minimal.override {
-              extensions = [ "rust-src" ];
+              extensions = [ "rust-analyzer" "rust-src" "clippy" "rustfmt" ];
               targets = [ ];
             }
           );
           rustToolchain = rustToolchainFor pkgs;
+
+        rustToolchainConfig = builtins.fromTOML (builtins.readFile ./rust-toolchain.toml );
 
         craneLib = (crane.mkLib pkgs).overrideToolchain rustToolchainFor;
         katgba-emu = pkgs.callPackage ./katgba-emu.nix { inherit katgba; };
         katgba = pkgs.callPackage ./package.nix { inherit craneLib rustToolchain rustTriple; };
       in {
         devShells = let
-          katgba-emu = import ./shell.nix { inherit self pkgs; };
+          katgba-emu = import ./shell.nix { inherit self pkgs rustToolchain; };
         in {
           default = katgba-emu;
           inherit katgba-emu;

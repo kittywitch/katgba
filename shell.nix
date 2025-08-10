@@ -1,4 +1,4 @@
-{pkgs, self}: let
+{pkgs, self, rustToolchain}: let
   inherit (pkgs) lib mkShell toilet;
   inherit (lib.meta) getExe;
 in mkShell {
@@ -7,5 +7,6 @@ in mkShell {
     '';
     nativeBuildInputs = [
       self.packages.${pkgs.system}.katgba-emu
+      rustToolchain
     ];
   }
